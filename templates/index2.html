@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,401 +6,485 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Inconsolata:wght@200..900&family=Noto+Sans+JP:wght@100..900&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 
     <style>
-        #canvas-container {
-            position: relative;
-            max-width: 100%;
+    
+      /* background color */
+      body {
+        background-color: pink; 
+        height: 100vh;
+      }
+            
+      /* fonts */
+      .alegreya-sans-sc-regular {
+        font-family: "Alegreya Sans SC", serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+      .courier-prime-regular {
+        font-family: "Courier Prime", monospace;
+        font-weight: 400;
+        font-style: normal;
+      }
+      .pixelify-sans {
+        font-family: "Pixelify Sans", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      #canvas-container {
+        position: relative;
+        max-width: 100%;
+        text-align: center;
+        margin: 0 auto;
+      }
+
+      #canvas {
+        border: 1px solid #000;
+        max-width: 80%;
+      }
+
+      button {
+        background-color: #ff6799;
+        color: white;
+        border-radius: 600px;
+        padding: 7px 30px;
+        margin: 10px 0;
+      }
+
+      h1 {
+        text-align: center;
+        color: #ff6799;
+        font-weight: bold;
+      }
+
+      h2, h3, h4, h5 {
+        color: #ff6799;
+        font-weight: bold;
+      }
+
+      .container {
+        margin: 0 auto;
+        padding: 20px;
+        max-width: 95%; 
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        text-align: center; 
+      }
+
+      #theme-form label, textarea, input, button {
+        max-width: 95%;
+        margin-bottom: 10px;
+      }
+      
+      select#theme-dropdown {
+            background-color: white;
+            border-style: solid;
+            border-color: black;
+            color: #1468a2;
+            border-radius: 10px;
+            padding: 7px 20px;
+            cursor: pointer;
+            max-width: 95%;
+            display: inline-block;
+            font-family: "Courier Prime";
         }
 
-        #canvas {
-            border: 1px solid #000;
-        }
 
+      #file-label-1, #file-label-2 {
+        background-color: white;
+        border-style: solid;
+        border-color: black;
+        color: #1468a2;
+        border-radius: 10px;
+        padding: 7px 20px;
+        cursor: pointer;
+        display: inline-block;
+      }
+
+#preview-area, #result-preview, #output-area, #themed-image-preview, #preview-area2, #merged-output-area {
+    display: flex;            
+    justify-content: center;  
+    margin-top: 20px;        
+}
+
+#preview-area img, #result-preview img, #output-area img, #themed-image-preview img, #preview-area2 img, #merged-output-area img {
+    width: 50%;  
+    height: 60%;  
+    object-fit: cover; 
+}
+
+      
     </style>
-
 </head>
 <body>
 
-<div style="font-family:'NotoSans', sans-serif; background-color: #c3ded9">
-    <div style="color: black; padding: 20px; border-radius: 10px; font-family:'NotoSans', sans-serif; ">
-        <h1>My Draw</h1>
-        <h2>Upload an image to begin!</h2>
-        <label style="font-family:'NotoSans', sans-serif;" for="file-1" id="file-label-1">Choose
-            file</label>
-        <input type="file" id="file-1"
-               name="file-1">
-        <button style="background-color: white; font-family:'NotoSans', sans-serif;" type="submit" id="upload-btn-1">
-            Upload
-        </button>
+<div class="container courier-prime-regular" style="background-color: #D1FFBD">
+    <h1 class="pixelify-sans" style="font-size: 70px; font-weight: bold">MyDraw</h1><br>
+    <h2 class="pixelify-sans">Upload an image to begin!</h2> <br>
 
-        <div id="preview-area">
-            <img id="image-preview1" src="" alt="Image Preview"
-                 style="display:none; width: 300px; height: auto; margin: 30px">
-        </div>
+    <div class="form-group">
+        <label for="file-1" id="file-label-1">CHOOSE FILE</label>
+        <input type="file" id="file-1" name="file-1" style="display: none;">
+        <button type="submit" id="upload-btn-1">UPLOAD</button>
+    </div>
 
-        <div id="canvas-container" style="margin: 30px">
-            <canvas id="canvas" width="600" height="400"></canvas>
-        </div>
+    <div id="preview-area" class="form-group">
+        <img id="image-preview1" src="" alt="Image Preview" style="display:none;">
+    </div>
 
-        <script>
-            const fileInput1 = document.getElementById('file-1');
-            const uploadButton1 = document.getElementById('upload-btn-1');
-            const imagePreview1 = document.getElementById('image-preview1');
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            let img = new Image();
-            let uploadedFilePath1 = '';
-            let startX, startY, endX, endY, isDragging = false;
-            let selectedRegion = {};
+    <div id="canvas-container" class="form-group">
+        <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
 
-            fileInput1.addEventListener('change', function () {
-                if (fileInput1.files.length > 0) {
-                    const fileName = fileInput1.files[0].name;
+    <script>
+        const fileInput1 = document.getElementById('file-1');
+        const uploadButton1 = document.getElementById('upload-btn-1');
+        const imagePreview1 = document.getElementById('image-preview1');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let img = new Image();
+        let uploadedFilePath1 = '';
+        let startX, startY, endX, endY, isDragging = false;
+        let selectedRegion = {};
 
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        img.src = e.target.result;
-                        img.onload = function () {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                            uploadedFilePath1 = e.target.result;
-                        };
+        fileInput1.addEventListener('change', function () {
+            if (fileInput1.files.length > 0) {
+                const fileName = fileInput1.files[0].name;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        uploadedFilePath1 = e.target.result;
                     };
-                    reader.readAsDataURL(fileInput1.files[0]);
-                }
-            });
-
-            uploadButton1.addEventListener('click', function () {
-                if (fileInput1.files.length > 0) {
-                    const file = fileInput1.files[0];
-
-                    const formData = new FormData();
-                    formData.append('file-1', file);
-
-                    fetch('/upload', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('File uploaded successfully!');
-                                uploadedFilePath1 = data.filePath;
-                            } else {
-                                alert('File upload failed.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error uploading file:', error);
-                        });
-                } else {
-                    alert('No file selected');
-                }
-            });
-
-            canvas.addEventListener('mousedown', function (e) {
-                startX = e.offsetX;
-                startY = e.offsetY;
-                isDragging = true;
-            });
-
-            canvas.addEventListener('mousemove', function (e) {
-                if (isDragging) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    ctx.beginPath();
-                    ctx.rect(startX, startY, e.offsetX - startX, e.offsetY - startY);
-                    ctx.strokeStyle = 'red';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    ctx.closePath();
-                }
-            });
-
-            canvas.addEventListener('mouseup', function (e) {
-                endX = e.offsetX;
-                endY = e.offsetY;
-                isDragging = false;
-
-                selectedRegion = {
-                    x: Math.min(startX, endX),
-                    y: Math.min(startY, endY),
-                    width: Math.abs(endX - startX),
-                    height: Math.abs(endY - startY)
                 };
-            });
-        </script>
+                reader.readAsDataURL(fileInput1.files[0]);
+            }
+        });
 
 
-        <h3>Select a region and add a description for inpainting</h3>
-
-        <textarea id="inpainting-prompt" rows="4" cols="50" placeholder="Enter inpainting prompt here"></textarea>
-        <br>
-        <button id="inpaint-btn">Perform Inpainting</button>
-
-        <div id="result-preview">
-            <img id="result-image" src="" alt="Result Image" style="display:none; max-width: 100%;">
-        </div>
-
-        <script>
-            document.getElementById('inpaint-btn').addEventListener('click', () => {
-                if (uploadedFilePath1 && selectedRegion.width && selectedRegion.height) {
-                    const prompt = document.getElementById('inpainting-prompt').value;
-
-                    const inpaintData = {
-                        image_path: uploadedFilePath1,
-                        prompt: prompt,
-                        x: selectedRegion.x,
-                        y: selectedRegion.y,
-                        width: selectedRegion.width,
-                        height: selectedRegion.height
-                    };
-
-                    fetch('/inpaint', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(inpaintData)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const resultImage = document.getElementById('result-image');
-                                resultImage.src = data.processed_image_path;
-                                resultImage.style.display = 'block';
-                            } else {
-                                alert('Inpainting failed: ' + data.error);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error performing inpainting:', error);
-                        });
-                } else {
-                    alert('Please upload an image and select a region first.');
-                }
-            });
-        </script>
 
 
-        <h3>Let's make our coloring page!</h3>
+        uploadButton1.addEventListener('click', function () {
+            if (fileInput1.files.length > 0) {
+                const file = fileInput1.files[0];
 
-        <button style="background-color: white;" type="button" id="edge-btn-1">Perform Edge Detection</button>
+                const formData = new FormData();
+                formData.append('file-1', file);
 
-        <div id="output-area">
-            <img id="edge-image-preview" src="" alt="Edge Detected Image"
-                 style="display:none; width: 300px; height: auto;">
-        </div>
-
-        <script>
-            const edgeButton = document.getElementById('edge-btn-1');
-            const edgeImagePreview = document.getElementById('edge-image-preview');
-
-            edgeButton.addEventListener('click', function () {
-
-                if (uploadedFilePath1) {
-                    fetch('/perform_edge_detection', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            image_path: uploadedFilePath1
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-
-                            if (data.success) {
-                                console.log("Edge detection succesful!");
-
-                                edgeImagePreview.src = data.edge_image_path;
-                                edgeImagePreview.style.display = 'block';
-                            } else {
-                                alert('Edge detection failed: ' + data.error);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error performing edge detection:', error);
-                        });
-                } else {
-                    alert('No file uploaded for edge detection.')
-                }
-            });
-        </script>
-
-
-        <h3>Let's color our coloring page! :)</h3>
-
-        <h4>You can pick a theme and/or edit the image in the style of another image!</h4>
-
-        <form id="theme-form">
-            <input type="radio" id="geometric" name="theme" value="Geometric">
-            <label for="geometric">Geometric</label><br>
-
-            <input type="radio" id="popart" name="theme" value="Pop art">
-            <label for="popart">Pop art</label><br>
-
-            <input type="radio" id="watercolor" name="theme" value="Watercolor">
-            <label for="watercolor">Watercolor</label><br>
-
-            <input type="radio" id="abstract" name="theme" value="Abstract">
-            <label for="abstract">Abstract</label><br>
-
-            <input type="radio" id="oilpainting" name="theme" value="Oil Painting">
-            <label for="oilpainting">Oil Painting</label><br>
-
-            <input type="radio" id="none" name="theme" value="None">
-            <label for="none">None</label><br>
-
-            <button style="margin-top: 20px; background-color: white;" type="submit">Submit Theme</button>
-
-        </form>
-
-        <div id="themed-image-preview">
-            <img id="themed-image" src="" alt="Themed Image" style="display:none; width: 300px; height: auto;">
-        </div>
-
-        <script>
-            const form = document.getElementById('theme-form');
-            const themedImage = document.getElementById('themed-image');
-
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const formData = new FormData(form);
-                formData.append('image_path', uploadedFilePath1);
-
-                fetch('/apply_theme', {
+                fetch('/upload', {
                     method: 'POST',
                     body: formData
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            themedImage.src = data.styled_image_path;
-                            themedImage.style.display = 'block';
+                            alert('File uploaded successfully!');
+                            uploadedFilePath1 = data.filePath;
                         } else {
-                            alert('Error applying theme: ' + data.error);
+                            alert('File upload failed.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error uploading file:', error);
+                    });
+            } else {
+                alert('No file selected');
+            }
+        });
+
+        canvas.addEventListener('mousedown', function (e) {
+            startX = e.offsetX;
+            startY = e.offsetY;
+            isDragging = true;
+        });
+
+        canvas.addEventListener('mousemove', function (e) {
+            if (isDragging) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.rect(startX, startY, e.offsetX - startX, e.offsetY - startY);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+            }
+        });
+
+        canvas.addEventListener('mouseup', function (e) {
+            endX = e.offsetX;
+            endY = e.offsetY;
+            isDragging = false;
+
+            selectedRegion = {
+                x: Math.min(startX, endX),
+                y: Math.min(startY, endY),
+                width: Math.abs(endX - startX),
+                height: Math.abs(endY - startY)
+            };
+        });
+    </script>
+
+    <h2 class="pixelify-sans">Select a region and add a description for inpainting</h2><br>
+    <textarea id="inpainting-prompt" rows="4" cols="50" placeholder="Enter inpainting prompt here"></textarea> <br>
+    <button id="inpaint-btn">PERFORM INPAINTING</button>
+
+    <div id="result-preview" class="form-group">
+        <img id="result-image" src="" alt="Result Image" style="display:none;">
+    </div>
+
+    <script>
+        document.getElementById('inpaint-btn').addEventListener('click', () => {
+            if (uploadedFilePath1 && selectedRegion.width && selectedRegion.height) {
+                const prompt = document.getElementById('inpainting-prompt').value;
+
+                const inpaintData = {
+                    image_path: uploadedFilePath1,
+                    prompt: prompt,
+                    x: selectedRegion.x,
+                    y: selectedRegion.y,
+                    width: selectedRegion.width,
+                    height: selectedRegion.height
+                };
+
+                fetch('/inpaint', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(inpaintData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const resultImage = document.getElementById('result-image');
+                            resultImage.src = data.processed_image_path;
+                            resultImage.style.display = 'block';
+                        } else {
+                            alert('Inpainting failed: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error performing inpainting:', error);
+                    });
+            } else {
+                alert('Please upload an image and select a region first.');
+            }
+        });
+    </script>
+
+    <h2 class="pixelify-sans">Let's make our coloring page!</h2> 
+    <button type="button" id="edge-btn-1">PERFORM EDGE DETECTION</button>
+
+    <div id="output-area" class="form-group">
+        <img id="edge-image-preview" src="" alt="Edge Detected Image" style="display:none;">
+    </div>
+
+    <script>
+        const edgeButton = document.getElementById('edge-btn-1');
+        const edgeImagePreview = document.getElementById('edge-image-preview');
+
+
+        edgeButton.addEventListener('click', function () {
+
+
+            if (uploadedFilePath1) {
+                fetch('/perform_edge_detection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image_path: uploadedFilePath1
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+
+
+                        if (data.success) {
+                            console.log("Edge detection succesful!");
+
+
+                            edgeImagePreview.src = data.edge_image_path;
+                            edgeImagePreview.style.display = 'block';
+                        } else {
+                            alert('Edge detection failed: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error performing edge detection:', error);
+                    });
+            } else {
+                alert('No file uploaded for edge detection.')
+            }
+        });
+    </script>
+
+
+    <h2 class="pixelify-sans">Let's color our coloring page!</h2><br>
+    <h4>You can pick a theme and/or edit the image in the style of another image!</h4>
+
+    <form id="theme-form" class="form-group">
+        <select name="theme" id="theme-dropdown">
+            <option value="Geometric">GEOMETRIC</option>
+            <option value="Pop art">POP ART</option>
+            <option value="Watercolor">WATERCOLOR</option>
+            <option value="Abstract">ABSTRACT</option>
+            <option value="Oil Painting">OIL PAINTING</option>
+            <option value="None">NONE</option>
+        </select>
+        <button type="submit" style="margin-top: 20px;">SUBMIT THEME</button>
+    </form>
+
+    <div id="themed-image-preview" class="form-group">
+        <img id="themed-image" src="" alt="Themed Image" style="display:none;">
+    </div>
+
+    <script>
+        const form = document.getElementById('theme-form');
+        const themedImage = document.getElementById('themed-image');
+    
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+            const formData = new FormData(form);
+            formData.append('image_path', uploadedFilePath1);
+    
+            fetch('/apply_theme', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    themedImage.src = data.styled_image_path;
+                    themedImage.style.display = 'block';
+                } else {
+                    alert('Error applying theme: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+    <h4>Upload another image to change the style of the original image!</h4>
+    <label for="file-2" id="file-label-2">CHOOSE FILE</label>
+    <input type="file" id="file-2" name="file-2" style="display: none;">
+    <button type="submit" id="upload-btn-2">UPLOAD</button>
+
+   
+    <div id="preview-area2" class="form-group">
+        <img id="image-preview2" src="" alt="Image Preview 2" style="display:none;">
+    </div>
+
+
+    <script>
+        const fileInput2 = document.getElementById('file-2');
+        const fileNameSpan2 = document.getElementById('file-name-2');
+        const imagePreview2 = document.getElementById('image-preview2')
+        const uploadButton2 = document.getElementById('upload-btn-2');
+        let uploadedFilePath2 = '';
+
+        fileInput2.addEventListener('change', function () {
+            if (fileInput2.files.length > 0) {
+                const fileName = fileInput2.files[0].name;
+                fileNameSpan2.textContent = fileName;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview2.src = e.target.result;
+                    imagePreview2.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput2.files[0]);
+            } else {
+                fileNameSpan2.textContent = 'No file selected';
+                imagePreview2.style.display = 'none';
+            }
+        });
+
+uploadButton2.addEventListener('click', function () {
+    if (fileInput2.files.length > 0) {
+        const file = fileInput2.files[0]; 
+
+        const formData = new FormData();
+        formData.append('file-2', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('File uploaded successfully!');
+                uploadedFilePath2 = data.filePath;
+                imagePreview2.src = uploadedFilePath2;
+                imagePreview2.style.display = 'block'; 
+            } else {
+                alert('File upload failed.');
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+        });
+    } else {
+        alert('No file selected');
+    }
+});
+
+    </script>
+
+    <h4>Merge the original image with the uploaded second image!</h4>
+    <button type="button" id="merge-btn">MERGE IMAGES</button>
+
+    <div id="merged-output-area" class="form-group">
+        <img id="merged-image-preview" src="" alt="Merged Image" style="display:none;">
+    </div>
+
+    <script>
+        const mergeButton = document.getElementById('merge-btn');
+        const mergedImagePreview = document.getElementById('merged-image-preview');
+
+        mergeButton.addEventListener('click', function () {
+            if (uploadedFilePath1 && uploadedFilePath2) {
+                const formData = new FormData();
+                formData.append('original_image_path', uploadedFilePath1);
+                formData.append('second_image_path', uploadedFilePath2);
+
+                fetch('/merge_images', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            mergedImagePreview.src = data.merged_image_path;
+                            mergedImagePreview.style.display = 'block';
+                        } else {
+                            alert('Error merging images: ' + data.error);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                     });
-            });
-        </script>
-
-        <h5>Upload another image to change the style of the original image! </h5>
-
-        <label for="file-2" id="file-label-2">Choose
-            file</label>
-        <input type="file" id="file-2"
-               name="file-2">
-        <button type="submit" id="upload-btn-2">Upload
-        </button>
-
-        <div id="preview-area2">
-            <img id="image-preview2" src="" alt="Image Preview 2" style="display:none; width: 300px; height: auto;">
-        </div>
-
-        <script>
-            const fileInput2 = document.getElementById('file-2');
-            const fileNameSpan2 = document.getElementById('file-name-2');
-            const imagePreview2 = document.getElementById('image-preview2')
-            const uploadButton2 = document.getElementById('upload-btn-2');
-            let uploadedFilePath2 = '';
-
-            fileInput2.addEventListener('change', function () {
-                if (fileInput2.files.length > 0) {
-                    const fileName = fileInput2.files[0].name;
-                    fileNameSpan2.textContent = fileName;
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview2.src = e.target.result;
-                        imagePreview2.style.display = 'block';
-                    };
-                    reader.readAsDataURL(fileInput2.files[0]);
-                } else {
-                    fileNameSpan2.textContent = 'No file selected';
-                    imagePreview2.style.display = 'none';
-                }
-            });
-
-            uploadButton2.addEventListener('click', function () {
-                if (fileInput2.files.length > 0) {
-                    const file = fileInput2.files[0];
-
-                    const formData = new FormData();
-                    formData.append('file-2', file);
-
-                    fetch('/upload', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('File uploaded successfully!');
-                                uploadedFilePath2 = data.filePath;
-                                imagePreview2.src = uploadedFilePath2;
-                                imagePreview2.style.display = 'block';
-                            } else {
-                                alert('File upload failed.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error uploading file:', error);
-                        });
-                } else {
-                    alert('No file selected');
-                }
-            });
-        </script>
-
-        <h5>Merge the original image with the uploaded second image!</h5>
-
-        <button type="button" id="merge-btn">Merge Images</button>
-
-        <div id="merged-output-area">
-            <img id="merged-image-preview" src="" alt="Merged Image" style="display:none; width: 300px; height: auto;">
-        </div>
-
-        <script>
-            const mergeButton = document.getElementById('merge-btn');
-            const mergedImagePreview = document.getElementById('merged-image-preview');
-
-            mergeButton.addEventListener('click', function () {
-                if (uploadedFilePath1 && uploadedFilePath2) {
-                    const formData = new FormData();
-                    formData.append('original_image_path', uploadedFilePath1);
-                    formData.append('second_image_path', uploadedFilePath2);
-
-                    fetch('/merge_images', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                mergedImagePreview.src = data.merged_image_path;
-                                mergedImagePreview.style.display = 'block';
-                            } else {
-                                alert('Error merging images: ' + data.error);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                } else {
-                    alert('Both images must be uploaded to merge.');
-                }
-            });
-        </script>
-    </div>
+            } else {
+                alert('Both images must be uploaded to merge.');
+            }
+        });
+    </script>
 
 </div>
 
 </body>
 </html>
+

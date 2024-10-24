@@ -48,7 +48,9 @@ def style_transfer(image_path, style_path, output_path, blend_factor=0.3
     content_image = load_img(image_path)
     style_image = load_img(style_path)
 
-    hub_model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
+    hub_model = hub.load('https://www.kaggle.com/models/google/arbitrary-image-stylization-v1/TensorFlow1/256/1')
+
+    #hub_model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
 
     stylized_image = hub_model(tf.constant(content_image), tf.constant(style_image))[0]
 
