@@ -69,7 +69,7 @@ def give_most_hex(file_path, code='hex'):
         return top_6
 @app.route('/')
 def home():
-    return render_template('index2.html')
+    return render_template('index.html')
 
 
 @app.route('/extract_colors', methods=['POST'])
